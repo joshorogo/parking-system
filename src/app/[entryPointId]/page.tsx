@@ -10,6 +10,7 @@ import { CustomToast } from "@/components/customToast";
 import { useParams } from "next/navigation";
 import { MdOutlineNavigateNext } from "react-icons/md";
 import { parkingSlotSize } from "@/helpers/vehicle";
+import CheckOut from "@/components/IdComponents/Checkout";
 import moment from "moment";
 
 const initialToast = {
@@ -21,6 +22,7 @@ const initialToast = {
 const EntryPointId = () => {
   const params = useParams();
   const [toastInfo, setToastInfo] = useState(initialToast);
+  const [modal, setModal] = useState({ checkout: false });
   const { carInformation, carList, setCarInfo, updateCarList } = useCarStore(
     (state) => state
   );
@@ -30,7 +32,41 @@ const EntryPointId = () => {
   const doPark = () => {
     try {
       if (carInformation?.isParked) {
-        console.log(carInformation);
+        let slot = null;
+        let price = 0;
+
+        for (let i of parkingSlot) {
+          if (i.occupant?.vehiclePlate === carInformation?.vehiclePlate) {
+            slot = i;
+          }
+        }
+
+        const diffMinutes = moment().diff(carInformation?.timeIn, "minutes");
+        const diffHours = Math.round(diffMinutes / 60);
+        // const diffHours = 23;
+        let _size = slot?.size;
+        let pExceedHrs =
+          _size === 0 ? 20 : _size === 1 ? 60 : _size === 2 ? 100 : 0;
+        if (diffHours <= 3) {
+          price = 40;
+        } else if (diffHours >= 24) {
+          let remainder = Math.round(diffHours % 24);
+          let excessPrice = remainder * pExceedHrs;
+          let complete24Hrs = Math.floor(diffHours / 24);
+          price = complete24Hrs * 5000 + excessPrice;
+        } else if (diffHours <= 23 && diffHours >= 4) {
+          let remainder = diffHours - 3;
+          let excessPrice = remainder * pExceedHrs;
+          price = 40 + excessPrice;
+        }
+
+        setCarInfo({
+          ...carInformation,
+          timeOut: moment().format(),
+          price: price,
+          duration: diffMinutes,
+        });
+        setModal((modal) => ({ ...modal, checkout: !modal.checkout }));
       } else {
         let selectedSlot: any = Number(params?.entryPointId);
         let nearestSlot = 7;
@@ -63,6 +99,8 @@ const EntryPointId = () => {
               isParked: true,
               timeIn: moment().format(),
               timeOut: null,
+              price: null,
+              duration: null,
             };
           }
         }
@@ -72,6 +110,8 @@ const EntryPointId = () => {
             i.isParked = true;
             i.timeIn = moment().format();
             i.timeOut = null;
+            i.price = null;
+            i.duration = null;
           }
         }
 
@@ -82,9 +122,13 @@ const EntryPointId = () => {
           isParked: true,
           timeIn: moment().format(),
           timeOut: null,
+          price: null,
+          duration: null,
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getSize = (type: any) => {
@@ -118,6 +162,13 @@ const EntryPointId = () => {
         text={toastInfo?.text}
         bg={toastInfo?.bg}
       />
+
+      <CheckOut
+        modal={modal}
+        onClose={() =>
+          setModal((modal) => ({ ...modal, checkout: !modal.checkout }))
+        }
+      />
       <div className="d-flex flex-column">
         <div className="mt-2 bread__crumb bg-transparent">
           <Link href={"/"}>Home</Link>
@@ -135,7 +186,7 @@ const EntryPointId = () => {
           </div>
           <div className="d-flex justify-content-end w-100">
             <button className="primary-button w-15 mt-2" onClick={doPark}>
-              {!carInformation?.isParked ? "Park" : "Unpark"}
+              {!carInformation?.isParked ? "Park" : "Checkout"}
             </button>
           </div>
         </div>

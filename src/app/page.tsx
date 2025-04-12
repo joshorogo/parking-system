@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { useEntryPointsStore } from "@/store/entryPoints";
+import { useParkingSlotStore } from "@/store/parkingSlot";
 import { CustomToast } from "@/components/customToast";
 
 import CarInformation from "@/components/HomeComponents/CarInformation";
@@ -23,6 +24,7 @@ const Home = () => {
   const { entryPoints, add, deleteEntry } = useEntryPointsStore(
     (state) => state
   );
+  const { parkingSlot, updatePSList } = useParkingSlotStore((state) => state);
 
   const doDeleteEntryPoint = (id: any) => {
     if (entryPoints?.length <= 3) {
@@ -41,6 +43,24 @@ const Home = () => {
       bg: "success",
       show: true,
       text: `Successfully deleted an entry point (${id})`,
+    }));
+  };
+
+  const doAddEntryPoint = () => {
+    for (let i of parkingSlot) {
+      const randomNumber = Math.floor(Math.random() * 7) + 1;
+      i.distances.push(randomNumber);
+    }
+
+    add({ id: +entryPoints[entryPoints?.length - 1].id + 1 });
+    updatePSList(parkingSlot);
+    setToastInfo((toast) => ({
+      ...toast,
+      bg: "success",
+      show: true,
+      text: `Successfully added a new entry point (${
+        +entryPoints[entryPoints?.length - 1].id + 1
+      })`,
     }));
   };
 
@@ -77,17 +97,7 @@ const Home = () => {
           </button>
           <button
             className="primary-button w-15 mt-2"
-            onClick={() => {
-              add({ id: +entryPoints[entryPoints?.length - 1].id + 1 });
-              setToastInfo((toast) => ({
-                ...toast,
-                bg: "success",
-                show: true,
-                text: `Successfully added a new entry point (${
-                  +entryPoints[entryPoints?.length - 1].id + 1
-                })`,
-              }));
-            }}
+            onClick={doAddEntryPoint}
           >
             Add Entry Point
           </button>

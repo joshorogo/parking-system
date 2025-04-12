@@ -9,6 +9,8 @@ interface CarInformation {
   timeIn?: any;
   timeOut?: any;
   isParked?: boolean;
+  duration?: any;
+  price?: any;
 }
 
 interface InitialState {
