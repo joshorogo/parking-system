@@ -3,7 +3,9 @@ import { useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi";
 import { useEntryPointsStore } from "@/store/entryPoints";
 import { CustomToast } from "@/components/customToast";
-import { useRouter } from "next/navigation";
+
+import CarInformation from "@/components/HomeComponents/CarInformation";
+import CarList from "@/components/HomeComponents/CarList";
 
 const initialToast = {
   bg: "primary",
@@ -15,8 +17,9 @@ const Home = () => {
   //   const data = await fetch("http://localhost:3000/api/entryPoints");
   //   const entryPoints = await data.json();
 
-  const router = useRouter();
   const [toastInfo, setToastInfo] = useState(initialToast);
+  const [modal, setModal] = useState({ info: false, list: false });
+  const [selectedEp, setSelectedEp] = useState(null);
   const { entryPoints, add, deleteEntry } = useEntryPointsStore(
     (state) => state
   );
@@ -51,23 +54,44 @@ const Home = () => {
         text={toastInfo?.text}
         bg={toastInfo?.bg}
       />
-      <div className="d-flex justify-content-end">
-        <button
-          className="primary-button w-25 mt-2"
-          onClick={() => {
-            add({ id: +entryPoints[entryPoints?.length - 1].id + 1 });
-            setToastInfo((toast) => ({
-              ...toast,
-              bg: "success",
-              show: true,
-              text: `Successfully added a new entry point (${
-                +entryPoints[entryPoints?.length - 1].id + 1
-              })`,
-            }));
-          }}
-        >
-          Add Entry Point
-        </button>
+
+      <CarInformation
+        modal={modal}
+        onClose={() => setModal((modal) => ({ ...modal, info: !modal.info }))}
+      />
+      <CarList
+        modal={modal}
+        pointId={selectedEp}
+        onClose={() => setModal((modal) => ({ ...modal, list: !modal.list }))}
+      />
+
+      <div className="d-flex ">
+        <div className="d-flex justify-content-end gap-2 w-100">
+          <button
+            className="outline-button w-15 mt-2"
+            onClick={() =>
+              setModal((modal) => ({ ...modal, info: !modal.info }))
+            }
+          >
+            Add Car Information
+          </button>
+          <button
+            className="primary-button w-15 mt-2"
+            onClick={() => {
+              add({ id: +entryPoints[entryPoints?.length - 1].id + 1 });
+              setToastInfo((toast) => ({
+                ...toast,
+                bg: "success",
+                show: true,
+                text: `Successfully added a new entry point (${
+                  +entryPoints[entryPoints?.length - 1].id + 1
+                })`,
+              }));
+            }}
+          >
+            Add Entry Point
+          </button>
+        </div>
       </div>
       <h5 className="text-center mt-5">Select an Entry Point</h5>
       <div className="d-flex flex-wrap h-100 w-100 justify-content-center mt-1 gap-3">
@@ -92,7 +116,8 @@ const Home = () => {
                 className="outline-button-checked bg-transparent w-100"
                 style={{ height: 30 }}
                 onClick={() => {
-                  router.push(`/${point.id}`);
+                  setSelectedEp(point.id);
+                  setModal((modal) => ({ ...modal, list: !modal.list }));
                 }}
               >
                 Enter

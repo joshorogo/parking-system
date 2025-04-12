@@ -96,6 +96,20 @@ button:disabled {
   pointer-events: all !important;
 }
 
+input {
+  display: flex;
+  border: 1px solid #dee2e6;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background-color: #ffffff;
+  outline: none !important;
+  font-size: 16px;
+}
+
+input:disabled {
+  background-color: #e9ecef;
+}
+
 .main-header {
   width: 100%;
   height: 50px;
@@ -260,4 +274,104 @@ button:disabled {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+.bread__crumb {
+  height: 40px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  width: max-content;
+  overflow: hidden;
+}
+
+.bread__crumb > a {
+  color: #a3a5a8;
+  text-decoration: none;
+  font-weight: 400;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.bread__crumb > a:hover {
+  color: black !important;
+  text-decoration: underline;
+  font-weight: bold;
+}
+.bread__crumb > a:last-child {
+  color: black !important;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.table__responsive {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 1.2rem 0 1.5rem 0;
+  border-radius: 3px;
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  background: white;
+}
+
+.table__container {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: white;
+}
+
+.table__container__dummy {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.table__container__dummy th {
+  padding: 0.6rem 0 !important;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.table__container__dummy td {
+  padding: 0.2rem 0.3rem !important;
+  text-align: right;
+}
+
+.table__container__dummy th {
+  padding: 0.2rem 0.3rem !important;
+  text-align: right;
+}
+
+.table__container th {
+  background-color: white;
+  font-weight: bold;
+}
+
+.table__custom-th > th {
+  border: 0.5px white solid;
+  padding: 0.6rem !important;
+  background: white;
+}
+
+.table__container th,
+.table__container td {
+  padding: 0.7rem;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+  background: white;
+  border-bottom: 2px solid #f6f6f6;
+}
+
+.table__container button {
+  /* border: 0; */
+  text-decoration: none;
+  color: #6b7380;
+  /* background: none; */
 }
