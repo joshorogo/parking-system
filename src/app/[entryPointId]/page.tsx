@@ -71,20 +71,37 @@ const EntryPointId = () => {
         let selectedSlot: any = Number(params?.entryPointId);
         let nearestSlot = 7;
         let finalSlot = null;
+        // let lowestParkingSlot =
+        //   carInformation?.vehicleType === "small"
+        //     ? 0
+        //     : carInformation?.vehicleType === "medium"
+        //     ? 1
+        //     : carInformation?.vehicleType
+        //     ? 2
+        //     : 0;
 
         let size = getSize(carInformation?.vehicleType);
+
+        // const SP = [0, 1, 2];
+        // const MP = [1, 2];
+        // const LP = [2];
 
         for (let i in parkingSlot) {
           let pss = parkingSlot[i].size;
 
           if (!parkingSlot[i].occupied && size[pss]) {
-            for (let j = 0; j < parkingSlot[i].distances.length; j++) {
-              if (nearestSlot > parkingSlot[i].distances[selectedSlot - 1]) {
-                nearestSlot = parkingSlot[i].distances[selectedSlot - 1];
-                finalSlot = parkingSlot[i];
-              }
+            if (nearestSlot >= parkingSlot[i].distances[selectedSlot - 1]) {
+              nearestSlot = parkingSlot[i].distances[selectedSlot - 1];
+              finalSlot = parkingSlot[i];
             }
           }
+        }
+
+        const diffMinutes = moment().diff(carInformation?.timeOut, "minutes");
+        let timeIn = moment().format();
+
+        if (Math.ceil(diffMinutes) <= 60 && Math.ceil(diffMinutes) >= 1) {
+          timeIn = carInformation?.timeIn;
         }
 
         let payload = {
@@ -97,7 +114,7 @@ const EntryPointId = () => {
             i.occupant = {
               ...carInformation,
               isParked: true,
-              timeIn: moment().format(),
+              timeIn: timeIn,
               timeOut: null,
               price: null,
               duration: null,
@@ -108,7 +125,7 @@ const EntryPointId = () => {
         for (let i of carList) {
           if (i.vehiclePlate === carInformation?.vehiclePlate) {
             i.isParked = true;
-            i.timeIn = moment().format();
+            i.timeIn = timeIn;
             i.timeOut = null;
             i.price = null;
             i.duration = null;
@@ -120,7 +137,7 @@ const EntryPointId = () => {
         setCarInfo({
           ...carInformation,
           isParked: true,
-          timeIn: moment().format(),
+          timeIn: timeIn,
           timeOut: null,
           price: null,
           duration: null,
@@ -132,25 +149,25 @@ const EntryPointId = () => {
   };
 
   const getSize = (type: any) => {
-    let pss1 = false,
-      pss2 = false,
-      pss3 = false;
+    let SP = false,
+      MP = false,
+      LP = false;
 
     if (type === "small") {
-      pss1 = true;
-      pss2 = true;
-      pss3 = true;
+      SP = true;
+      MP = true;
+      LP = true;
     } else if (type === "medium") {
-      pss1 = false;
-      pss2 = true;
-      pss3 = true;
+      SP = false;
+      MP = true;
+      LP = true;
     } else if (type === "large") {
-      pss1 = false;
-      pss2 = false;
-      pss3 = true;
+      SP = false;
+      MP = false;
+      LP = true;
     }
 
-    return [pss1, pss2, pss3];
+    return [SP, MP, LP];
   };
   return (
     <div className="d-flex flex-column container h-100">

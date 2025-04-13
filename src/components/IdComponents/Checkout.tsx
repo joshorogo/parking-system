@@ -75,6 +75,10 @@ const CheckOut = ({ modal, onClose }: any) => {
           </button>
         </div>
 
+        <label style={{ fontSize: 10, fontFamily: "Karla Italic" }}>
+          Note: Kindly wait for 1 minute to park again.
+        </label>
+
         <div className="table__responsive">
           <table className="table__container">
             <thead>
