@@ -23,8 +23,8 @@ const CarList = ({ modal, onClose, pointId }: any) => {
           </button>
         </div>
 
-        <div className="table__responsive">
-          <table className="table__container">
+        <div className="table__responsive" style={{ overflow: "scroll" }}>
+          <table className="table__container" style={{ overflow: "scroll" }}>
             <thead>
               <tr>
                 <th>Vehicle #</th>

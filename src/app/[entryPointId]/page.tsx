@@ -71,14 +71,14 @@ const EntryPointId = () => {
         let selectedSlot: any = Number(params?.entryPointId);
         let nearestSlot = 7;
         let finalSlot = null;
-        // let lowestParkingSlot =
-        //   carInformation?.vehicleType === "small"
-        //     ? 0
-        //     : carInformation?.vehicleType === "medium"
-        //     ? 1
-        //     : carInformation?.vehicleType
-        //     ? 2
-        //     : 0;
+        let curVehicleType =
+          carInformation?.vehicleType === "small"
+            ? 0
+            : carInformation?.vehicleType === "medium"
+            ? 1
+            : carInformation?.vehicleType
+            ? 2
+            : 0;
 
         let size = getSize(carInformation?.vehicleType);
 
@@ -92,7 +92,19 @@ const EntryPointId = () => {
           if (!parkingSlot[i].occupied && size[pss]) {
             if (nearestSlot >= parkingSlot[i].distances[selectedSlot - 1]) {
               nearestSlot = parkingSlot[i].distances[selectedSlot - 1];
-              finalSlot = parkingSlot[i];
+            }
+          }
+        }
+
+        for (let i of parkingSlot) {
+          let pss = i.size;
+          if (
+            i.distances[selectedSlot - 1] === nearestSlot &&
+            size[pss] &&
+            !i.occupied
+          ) {
+            if (i.size <= curVehicleType) {
+              finalSlot = i;
             }
           }
         }
@@ -107,6 +119,16 @@ const EntryPointId = () => {
         let payload = {
           ...finalSlot,
         };
+
+        if (!finalSlot) {
+          setToastInfo((toast) => ({
+            ...toast,
+            bg: "danger",
+            show: true,
+            text: `There are no available parking slot.`,
+          }));
+          return;
+        }
 
         for (let i of parkingSlot) {
           if (i.id === payload.id) {
