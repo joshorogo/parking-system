@@ -68,17 +68,10 @@ const EntryPointId = () => {
         });
         setModal((modal) => ({ ...modal, checkout: !modal.checkout }));
       } else {
-        let selectedSlot: any = Number(params?.entryPointId);
-        let nearestSlot = 7;
+        let selectedEntryPoint: any = Number(params?.entryPointId);
+        let nearestDistance = 7;
         let finalSlot = null;
-        let curVehicleType =
-          carInformation?.vehicleType === "small"
-            ? 0
-            : carInformation?.vehicleType === "medium"
-            ? 1
-            : carInformation?.vehicleType
-            ? 2
-            : 0;
+        let lowestPSS = Infinity;
 
         let size = getSize(carInformation?.vehicleType);
 
@@ -90,8 +83,12 @@ const EntryPointId = () => {
           let pss = parkingSlot[i].size;
 
           if (!parkingSlot[i].occupied && size[pss]) {
-            if (nearestSlot >= parkingSlot[i].distances[selectedSlot - 1]) {
-              nearestSlot = parkingSlot[i].distances[selectedSlot - 1];
+            if (
+              nearestDistance >=
+              parkingSlot[i].distances[selectedEntryPoint - 1]
+            ) {
+              nearestDistance =
+                parkingSlot[i].distances[selectedEntryPoint - 1];
             }
           }
         }
@@ -99,15 +96,34 @@ const EntryPointId = () => {
         for (let i of parkingSlot) {
           let pss = i.size;
           if (
-            i.distances[selectedSlot - 1] === nearestSlot &&
+            i.distances[selectedEntryPoint - 1] === nearestDistance &&
             size[pss] &&
             !i.occupied
           ) {
-            if (i.size <= curVehicleType) {
+            if (i.size < lowestPSS) {
+              lowestPSS = i.size;
               finalSlot = i;
             }
           }
         }
+
+        // for (let i in parkingSlot) {
+        //   let pss = parkingSlot[i].size;
+
+        //   if (!parkingSlot[i].occupied && size[pss]) {
+        //     if (
+        //       nearestDistance >=
+        //       parkingSlot[i].distances[selectedEntryPoint - 1]
+        //     ) {
+        //       nearestDistance =
+        //         parkingSlot[i].distances[selectedEntryPoint - 1];
+        //       if (pss < lowestPSS) {
+        //         lowestPSS = pss;
+        //         finalSlot = parkingSlot[i];
+        //       }
+        //     }
+        //   }
+        // }
 
         const diffMinutes = moment().diff(carInformation?.timeOut, "minutes");
         let timeIn = moment().format();
