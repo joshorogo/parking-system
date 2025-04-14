@@ -17,11 +17,21 @@ const CheckOut = ({ modal, onClose }: any) => {
     (i) => i.occupant?.vehiclePlate === carInformation?.vehiclePlate
   );
 
-  const minutes = carInformation?.duration;
-  const diffHours = Math.round(Number(minutes) / 60);
+  const getDuration = () => {
+    const minutes = carInformation?.duration;
+    const diffHours = Math.round(Number(minutes) / 60);
+    let duration = null;
 
-  const duration =
-    Number(minutes) <= 60 ? `${minutes} minutes` : `${diffHours} hour(s)`;
+    if (Number(minutes) <= 60) {
+      duration = `${minutes} minutes`;
+    } else if (Number(minutes) >= 61 && Number(minutes) <= 1440) {
+      duration = `${diffHours} hour(s)`;
+    } else {
+      let days = Math.round(Number(minutes) / 1441);
+      duration = `${days} day(s)`;
+    }
+    return duration;
+  };
 
   const doConfirm = (e: any) => {
     try {
@@ -106,7 +116,7 @@ const CheckOut = ({ modal, onClose }: any) => {
               </tr>
               <tr>
                 <td>Duration</td>
-                <td>{`${duration}`}</td>
+                <td>{`${getDuration()}`}</td>
               </tr>
               <tr>
                 <td>Total Price</td>
